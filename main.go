@@ -6,6 +6,7 @@ import (
 	"catalog/repository"
 	"catalog/server"
 	"catalog/services"
+	"catalog/utils"
 	"log"
 	"net"
 	"os"
@@ -29,7 +30,9 @@ func main() {
 
 	log.Printf("Listening on %s\n", servePort)
 	db := config.DatabaseConnection()
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(utils.AuthHandler),
+	)
 
 	menuItemRepo := repository.MenuItemRepository{DB: db}
 	menuItemService := services.MenuItemService{Repo: menuItemRepo}
