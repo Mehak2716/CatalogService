@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+option go_package = "/catalog";
+
+service Catalog {
+    rpc CreateRestaurant (CreateRestaurantRequest) returns (RestaurantResponse) {}
+    rpc CreateMenuItem (CreateMenuItemRequest) returns (MenuItemResponse) {}
+    rpc FetchAllRestaurants (FetchAllRestaurantsRequest) returns (RestaurantsResponse) {}
+    rpc FetchRestaurantMenuItems (FetchMenuItemsRequest) returns (MenuItemsResponse) {}
+}
+
+message Location{
+    float xCordinate = 1;
+    float yCordinate = 2;
+}
+
+
+message CreateRestaurantRequest{
+    string name = 1;
+    Location location = 2;
+    string status = 3;
+}
+
+message FetchAllRestaurantsRequest {}
+
+message RestaurantResponse {
+    int64 ID = 1;
+    string name = 2;
+    Location location = 3;
+    string status = 4;
+}
+
+message RestaurantsResponse {
+    repeated RestaurantResponse restaurants = 1;
+}
+
+message MenuItem {
+    int64 ID = 2;
+    string name = 3;
+    string description = 4;
+    double price = 5;
+}
+
+message CreateMenuItemRequest {
+    int64 restaurantID = 1;
+    string name = 2;
+    string description = 3;
+    double price = 4;
+}
+
+message FetchMenuItemsRequest {
+    int64 restaurantID = 1;
+}
+
+message MenuItemResponse {
+    int64 restaurantID = 1;
+    MenuItem menuItem = 2;
+}
+
+message MenuItemsResponse {
+    int64 restaurantID = 1;
+    repeated MenuItem menuItems = 2;
+}
+
+//protoc --go_out=. --go-grpc_out=. catalog.proto
