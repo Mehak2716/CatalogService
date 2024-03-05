@@ -26,7 +26,7 @@ func AuthHandler(ctx context.Context, req interface{}, info *grpc.UnaryServerInf
 			return nil, status.Error(codes.InvalidArgument, "To create restaurant , name and location is required.")
 		}
 
-	case "/Fulfillment/CreateMenuItem":
+	case "/Catalog/CreateMenuItem":
 
 		if err := isAdmin(ctx); err != nil {
 			return nil, err
@@ -35,7 +35,7 @@ func AuthHandler(ctx context.Context, req interface{}, info *grpc.UnaryServerInf
 		if r.Name == "" || r.Description == "" || r.RestaurantID == 0 || r.Price == 0 {
 			return nil, status.Error(codes.InvalidArgument, "Provide proper details for creating menu item ")
 		}
-	case "/Fulfillment/FetchRestaurantMenuItems":
+	case "/Catalog/FetchRestaurantMenuItems":
 
 		r := req.(*pb.FetchMenuItemsRequest)
 		if r.RestaurantID == 0 {

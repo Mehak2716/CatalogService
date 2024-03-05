@@ -22,7 +22,7 @@ func (repo *RestaurantRepository) Save(restaurant *models.Restaurant) (*models.R
 func (repo *RestaurantRepository) FetchAll() ([]models.Restaurant, error) {
 
 	var restaurants []models.Restaurant
-	res := repo.DB.Find(&restaurants)
+	res := repo.DB.Preload("Location").Find(&restaurants)
 
 	if res.Error != nil {
 		return nil, res.Error

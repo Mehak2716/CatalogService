@@ -91,10 +91,17 @@ func TestFetchAllRestaurantsSuccessfully(t *testing.T) {
 	mock, service := setUpRestaurantServiceTest()
 	req := &pb.FetchAllRestaurantsRequest{}
 
-	rows := sqlmock.NewRows([]string{"id", "name", "status"}).
-		AddRow(1, "Restaurant1", "Open").
-		AddRow(2, "Restaurant2", "Closed")
+	rows := sqlmock.NewRows([]string{"id", "name", "status", "xcordinate", "ycordinate"}).
+		AddRow(1, "Restaurant1", "Open", 1.23, 4.56).
+		AddRow(2, "Restaurant2", "Closed", 7.89, 10.11)
 	mock.ExpectQuery("SELECT \\* FROM \"restaurants\"").WillReturnRows(rows)
+
+	locationRows := sqlmock.NewRows([]string{"id", "xcordinate", "ycordinate", "restaurant_id"}).
+		AddRow(1, 1.23, 4.56, 1).
+		AddRow(2, 7.89, 10.11, 2)
+	mock.ExpectQuery("SELECT \\* FROM \"locations\" WHERE \"locations\".\"restaurant_id\" IN \\(\\$1,\\$2\\)").
+		WithArgs(1, 2).
+		WillReturnRows(locationRows)
 	res, err := service.FetchAll(req)
 
 	if res == nil {

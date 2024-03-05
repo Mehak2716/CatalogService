@@ -11,9 +11,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-var adminUsername = os.Getenv("ADMIN_USERNAME")
-var adminPassword = os.Getenv("ADMIN_PASSWORD")
-
 func isAdmin(ctx context.Context) error {
 
 	md, ok := metadata.FromIncomingContext(ctx)
@@ -38,6 +35,9 @@ func isAdmin(ctx context.Context) error {
 	}
 	username := credentials[0]
 	password := credentials[1]
+
+	adminUsername := os.Getenv("ADMIN_USERNAME")
+	adminPassword := os.Getenv("ADMIN_PASSWORD")
 
 	if username != adminUsername && password != adminPassword {
 		return status.Errorf(codes.Unauthenticated, "Invalid Admin Credentials")

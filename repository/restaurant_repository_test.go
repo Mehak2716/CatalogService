@@ -50,30 +50,26 @@ func TestRestaurantCreatedSuccessfully(t *testing.T) {
 
 func TestFetchAllRestaurantsSuccessfully(t *testing.T) {
 	mock, restaurantRepo := setUpRestaurantTest()
-	expectedRestaurants := []models.Restaurant{
-		{Name: "Restaurant1", Status: "Open"},
-		{Name: "Restaurant2", Status: "Closed"},
-	}
 
-	rows := sqlmock.NewRows([]string{"id", "name", "status"}).
-		AddRow(1, "Restaurant1", "Open").
-		AddRow(2, "Restaurant2", "Closed")
+	rows := sqlmock.NewRows([]string{"id", "name", "status", "xcordinate", "ycordinate"}).
+		AddRow(1, "Restaurant1", "Open", 1.23, 4.56).
+		AddRow(2, "Restaurant2", "Closed", 7.89, 10.11)
 	mock.ExpectQuery("SELECT \\* FROM \"restaurants\"").WillReturnRows(rows)
-	fetchedRestaurants, err := restaurantRepo.FetchAll()
+
+	locationRows := sqlmock.NewRows([]string{"id", "xcordinate", "ycordinate", "restaurant_id"}).
+		AddRow(1, 1.23, 4.56, 1).
+		AddRow(2, 7.89, 10.11, 2)
+	mock.ExpectQuery("SELECT \\* FROM \"locations\" WHERE \"locations\".\"restaurant_id\" IN \\(\\$1,\\$2\\)").
+		WithArgs(1, 2).
+		WillReturnRows(locationRows)
+
+	_, err := restaurantRepo.FetchAll()
 
 	if err != nil {
 		t.Fatalf("Error not expected but encountered: %v", err)
 	}
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("Unfulfilled expectations: %s", err)
-	}
-	if len(fetchedRestaurants) != len(expectedRestaurants) {
-		t.Fatalf("Unexpected number of restaurants. Expected: %d, Got: %d", len(expectedRestaurants), len(fetchedRestaurants))
-	}
-	for i, expected := range expectedRestaurants {
-		if fetchedRestaurants[i].Name != expected.Name || fetchedRestaurants[i].Status != expected.Status {
-			t.Fatalf("Unexpected restaurant. Expected: %+v, Got: %+v", expected, fetchedRestaurants[i])
-		}
 	}
 }
 

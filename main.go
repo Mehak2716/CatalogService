@@ -15,10 +15,10 @@ import (
 	"google.golang.org/grpc"
 )
 
-var servePort = os.Getenv("SERVER_PORT")
-
 func main() {
 	err := godotenv.Load(".env")
+	servePort := os.Getenv("SERVER_PORT")
+
 	if err != nil {
 		log.Fatalf("Error loading env file %v", err)
 	}
